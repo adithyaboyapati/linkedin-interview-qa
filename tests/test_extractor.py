@@ -11,7 +11,6 @@ from app.extraction.qa_extractor import (
 )
 from app.models import ExtractionResult, PostClassification
 
-
 POST = (
     "Interview questions I was asked:\n"
     "Q: What is the GIL?\n"

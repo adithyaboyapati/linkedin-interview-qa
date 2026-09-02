@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from app.config import Settings
 from app.extraction.normalizer import content_hash
 from app.main import main

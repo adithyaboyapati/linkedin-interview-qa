@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from collections import defaultdict
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from langchain_core.tools import BaseTool
@@ -13,7 +13,7 @@ from langgraph.types import interrupt
 
 from app.config import Settings
 from app.extraction.normalizer import question_hash
-from app.extraction.qa_extractor import QAExtractor, answer_is_grounded
+from app.extraction.qa_extractor import Extractor, answer_is_grounded
 from app.extraction.vision import SlideTranscriber, combined_source_text, source_text_for_post
 from app.graph.state import CollectorState
 from app.models import CollectedPost, PdfDocumentData, QAPairDraft
@@ -84,7 +84,7 @@ def make_collect_posts_node(collect_tool: BaseTool) -> Callable[[CollectorState]
 
 
 def make_classify_posts_node(
-    extractor: QAExtractor,
+    extractor: Extractor,
     *,
     transcriber: SlideTranscriber | None = None,
     raw_dump_dir=None,
@@ -101,7 +101,7 @@ def make_classify_posts_node(
             text = _source_text(payload)
             try:
                 result = extractor.classify(text)
-            except Exception as exc:  # noqa: BLE001 - keep classifying remaining posts
+            except Exception as exc:
                 logger.warning("classify failed for %s: %s", _post_key(payload), exc)
                 continue
             if result.is_interview_related:
@@ -114,7 +114,7 @@ def make_classify_posts_node(
     return classify_posts
 
 
-def make_extract_qa_node(extractor: QAExtractor) -> Callable[[CollectorState], dict]:
+def make_extract_qa_node(extractor: Extractor) -> Callable[[CollectorState], dict]:
     def extract_qa(state: CollectorState) -> dict:
         updates = log_node("extract_qa")
         attempts = int(state.get("extract_attempts") or 0) + 1
@@ -133,7 +133,7 @@ def make_extract_qa_node(extractor: QAExtractor) -> Callable[[CollectorState], d
         for payload in targets:
             try:
                 result = extractor.extract(_source_text(payload), ground=False)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 logger.warning("extract failed for %s: %s", _post_key(payload), exc)
                 continue
             for pair in result.qa_pairs:
@@ -163,7 +163,10 @@ def validate_qa(state: CollectorState) -> dict:
     posts = {_post_key(post): post for post in state.get("interview_posts") or []}
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for pair in state.get("qa_pairs") or []:
-        grouped[pair.get("post_hash")].append(pair)
+        post_hash = pair.get("post_hash")
+        if not isinstance(post_hash, str) or not post_hash:
+            continue
+        grouped[post_hash].append(pair)
 
     validated: list[dict[str, Any]] = []
     results: list[dict[str, Any]] = []
@@ -291,7 +294,7 @@ def make_generate_pdf_node(settings: Settings, repo: Repository) -> Callable[[Co
         grouped = repo.answered_qa_by_category()
         data = PdfDocumentData(
             creator=settings.linkedin_profile_url or "LinkedIn profile",
-            generated_at=datetime.now(timezone.utc).replace(tzinfo=None),
+            generated_at=datetime.now(UTC).replace(tzinfo=None),
             categories=grouped,
         )
         path = generate_pdf(data, settings.pdf_output_path)

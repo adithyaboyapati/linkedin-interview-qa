@@ -10,12 +10,13 @@ from __future__ import annotations
 import logging
 import uuid
 from collections.abc import Callable
+from typing import Any
 
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
 
 from app.config import Settings
-from app.extraction.qa_extractor import QAExtractor
+from app.extraction.qa_extractor import Extractor, QAExtractor
 from app.extraction.vision import SlideTranscriber
 from app.graph.nodes import (
     deduplicate,
@@ -36,6 +37,11 @@ from app.storage.repository import Repository
 logger = logging.getLogger("app.graph")
 
 
+def _graph_node(fn: Callable[..., Any]) -> Any:
+    """LangGraph's add_node overloads do not accept TypedDict callables under mypy."""
+    return fn
+
+
 def _checkpointer():
     try:
         from langgraph.checkpoint.memory import InMemorySaver as Saver
@@ -47,7 +53,7 @@ def _checkpointer():
 def build_graph(
     *,
     settings: Settings,
-    extractor: QAExtractor,
+    extractor: Extractor,
     repo: Repository,
     collect_fn: Callable[[], list[CollectedPost]] | None = None,
     checkpointer=None,
@@ -56,20 +62,22 @@ def build_graph(
     """Compile the Q&A collector graph. SQLite and PDF stay in their modules."""
     collect_tool = make_collect_posts_tool(settings, collect_fn=collect_fn)
     builder = StateGraph(CollectorState)
-    builder.add_node("collect_posts", make_collect_posts_node(collect_tool))
+    builder.add_node("collect_posts", _graph_node(make_collect_posts_node(collect_tool)))
     builder.add_node(
         "classify_posts",
-        make_classify_posts_node(
-            extractor,
-            transcriber=transcriber,
-            raw_dump_dir=settings.raw_dump_dir,
+        _graph_node(
+            make_classify_posts_node(
+                extractor,
+                transcriber=transcriber,
+                raw_dump_dir=settings.raw_dump_dir,
+            )
         ),
     )
-    builder.add_node("extract_qa", make_extract_qa_node(extractor))
-    builder.add_node("validate_qa", validate_qa)
-    builder.add_node("deduplicate", deduplicate)
-    builder.add_node("save_to_db", make_save_to_db_node(repo))
-    builder.add_node("generate_pdf", make_generate_pdf_node(settings, repo))
+    builder.add_node("extract_qa", _graph_node(make_extract_qa_node(extractor)))
+    builder.add_node("validate_qa", _graph_node(validate_qa))
+    builder.add_node("deduplicate", _graph_node(deduplicate))
+    builder.add_node("save_to_db", _graph_node(make_save_to_db_node(repo)))
+    builder.add_node("generate_pdf", _graph_node(make_generate_pdf_node(settings, repo)))
 
     builder.add_edge(START, "collect_posts")
     builder.add_edge("collect_posts", "classify_posts")
@@ -126,7 +134,7 @@ def run_workflow(
     *,
     skip_scrape: bool = False,
     posts: list[CollectedPost] | None = None,
-    extractor: QAExtractor | None = None,
+    extractor: Extractor | None = None,
     handle_login: bool = True,
     transcriber: SlideTranscriber | None = None,
 ) -> dict:

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.config import Settings, get_settings
 from app.models import PdfDocumentData
@@ -125,7 +125,7 @@ def cmd_extract(settings: Settings, args: argparse.Namespace) -> int:
             created_total += created
             skipped_total += skipped
             print(f"  saved {created} Q&A pair(s), skipped {skipped}")
-        except Exception as exc:  # noqa: BLE001 - keep going through remaining posts
+        except Exception as exc:
             repo.mark_extraction_failed(post, str(exc))
             print(f"  failed: {exc}")
 
@@ -145,7 +145,7 @@ def cmd_generate_pdf(settings: Settings, _args: argparse.Namespace) -> int:
     creator = settings.linkedin_profile_url or "LinkedIn profile"
     data = PdfDocumentData(
         creator=creator,
-        generated_at=datetime.now(timezone.utc).replace(tzinfo=None),
+        generated_at=datetime.now(UTC).replace(tzinfo=None),
         categories=grouped,
     )
     path = generate_pdf(data, settings.pdf_output_path)
@@ -269,7 +269,7 @@ def cmd_check(settings: Settings, _args: argparse.Namespace) -> int:
         with sync_playwright() as playwright:
             chromium_path = playwright.chromium.executable_path
             chromium_ok = bool(chromium_path)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         print(f"  Chromium:              MISSING ({exc})")
     else:
         print(f"  Chromium:              {'ok — ' + chromium_path if chromium_ok else 'MISSING'}")
@@ -334,7 +334,7 @@ def main(argv: list[str] | None = None) -> int:
     except KeyboardInterrupt:
         print("Interrupted.", file=sys.stderr)
         return 130
-    except Exception as exc:  # noqa: BLE001 - CLI boundary
+    except Exception as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
 

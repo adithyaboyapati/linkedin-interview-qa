@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 from sqlalchemy import (
     Boolean,
@@ -21,7 +22,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship,
 
 
 def utcnow() -> datetime:
-    return datetime.now(timezone.utc).replace(tzinfo=None)
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 class Base(DeclarativeBase):
@@ -45,7 +46,7 @@ class PostRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
 
-    qa_pairs: Mapped[list["QAPairRecord"]] = relationship(back_populates="post")
+    qa_pairs: Mapped[list[QAPairRecord]] = relationship(back_populates="post")
 
 
 class QAPairRecord(Base):
@@ -66,7 +67,7 @@ class QAPairRecord(Base):
 
 
 @event.listens_for(Engine, "connect")
-def _set_sqlite_pragma(dbapi_connection, _connection_record) -> None:  # type: ignore[no-untyped-def]
+def _set_sqlite_pragma(dbapi_connection: Any, _connection_record: Any) -> None:
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()

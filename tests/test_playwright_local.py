@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from app.linkedin.media import capture_slides_for_posts
 from app.linkedin.scraper import expand_see_more, extract_visible_posts
 

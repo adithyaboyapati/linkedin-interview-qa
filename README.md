@@ -102,10 +102,13 @@ The graph is the orchestrator. It does not reimplement scraping, storage, or PDF
 
 `--from-db` skips scraping and runs classify/extract/PDF on posts already stored by `collect`.
 
-## Tests
+## Tests and CI
 
 ```bash
+pip install -r requirements-dev.txt
+ruff check app tests
+mypy app
 pytest
 ```
 
-Tests cover configuration, models, SQLite persistence, deduplication, scraper helpers, LLM grounding, PDF generation, and CLI wiring. They do not log in to LinkedIn or call a live LLM.
+GitHub Actions runs the same three checks on push, pull request, and manual workflow dispatch. Tests cover configuration, models, SQLite persistence, deduplication, scraper helpers, LLM grounding, PDF generation, and CLI wiring. They do not log in to LinkedIn or call a live LLM.

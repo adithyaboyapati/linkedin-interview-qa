@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import StrEnum
-from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -80,10 +79,10 @@ def normalize_category(value: str | None) -> str:
 class CollectedPost(BaseModel):
     """A single accessible LinkedIn post captured from the activity feed."""
 
-    post_urn: Optional[str] = None
-    post_url: Optional[str] = None
-    author: Optional[str] = None
-    posted_at_text: Optional[str] = None
+    post_urn: str | None = None
+    post_url: str | None = None
+    author: str | None = None
+    posted_at_text: str | None = None
     raw_text: str
     content_hash: str
     image_text: str = ""
@@ -100,7 +99,7 @@ class QAPairDraft(BaseModel):
     """One Q&A pair returned by the LLM. Answers must come from the post."""
 
     question: str
-    answer: Optional[str] = None
+    answer: str | None = None
     answered: bool = False
     category: str = Category.OTHER
 
@@ -158,9 +157,9 @@ class StoredQA(BaseModel):
     question: str
     answer: str
     category: str
-    source_url: Optional[str] = None
-    author: Optional[str] = None
-    posted_at_text: Optional[str] = None
+    source_url: str | None = None
+    author: str | None = None
+    posted_at_text: str | None = None
 
 
 class CollectorStats(BaseModel):

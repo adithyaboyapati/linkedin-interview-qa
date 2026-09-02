@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from urllib.parse import urlparse, urlunparse
 
-from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError
+from playwright.sync_api import Page
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 from app.extraction.normalizer import content_hash, normalize_text
 from app.linkedin.media import capture_slides_for_posts

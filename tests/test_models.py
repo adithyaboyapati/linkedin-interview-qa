@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import pytest
-from pydantic import ValidationError
-
 from app.models import (
     CATEGORY_ORDER,
     Category,
@@ -13,6 +11,7 @@ from app.models import (
     QAPairDraft,
     normalize_category,
 )
+from pydantic import ValidationError
 
 
 def test_collected_post_rejects_empty_text() -> None:

@@ -64,7 +64,7 @@ def _generate_with_fpdf(data: PdfDocumentData, output_path: Path) -> Path:
     from fpdf import FPDF
 
     class NumberedPDF(FPDF):
-        def footer(self) -> None:  # noqa: N802 - fpdf API
+        def footer(self) -> None:
             self.set_y(-15)
             self.set_x(self.l_margin)
             self.set_font("Helvetica", size=9)

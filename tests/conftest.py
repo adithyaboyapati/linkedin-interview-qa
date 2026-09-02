@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from app.config import Settings, clear_settings_cache, configure_runtime_env
 
 configure_runtime_env()

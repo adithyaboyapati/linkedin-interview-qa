@@ -5,7 +5,8 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from playwright.sync_api import Locator, Page, TimeoutError as PlaywrightTimeoutError
+from playwright.sync_api import Locator, Page
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 from app.models import CollectedPost
 

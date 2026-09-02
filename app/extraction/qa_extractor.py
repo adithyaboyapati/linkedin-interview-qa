@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 from openai import OpenAI
+from openai.types.chat import ChatCompletionMessageParam
 from pydantic import ValidationError
 
 from app.extraction.normalizer import normalize_for_hash, normalize_text
@@ -85,6 +86,12 @@ INTERVIEW_HINTS = (
 
 class JsonCompleter(Protocol):
     def __call__(self, messages: list[dict[str, str]]) -> str: ...
+
+
+class Extractor(Protocol):
+    def classify(self, post_text: str) -> PostClassification: ...
+
+    def extract(self, post_text: str, *, ground: bool = True) -> ExtractionResult: ...
 
 
 def looks_interview_related(text: str) -> bool:
@@ -201,13 +208,13 @@ class QAExtractor:
             try:
                 response = self._client.chat.completions.create(
                     model=self.model,
-                    messages=messages,
+                    messages=cast(list[ChatCompletionMessageParam], messages),
                     temperature=0,
                     max_tokens=8000,
                     response_format={"type": "json_object"},
                 )
                 content = response.choices[0].message.content or ""
                 return _parse_json_content(content)
-            except Exception as exc:  # noqa: BLE001 - retry once on parse/API errors
+            except Exception as exc:
                 last_error = exc
         raise ValueError(f"LLM extraction failed: {last_error}") from last_error

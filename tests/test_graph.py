@@ -4,12 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from langgraph.types import Command
-
 from app.config import Settings
 from app.extraction.normalizer import content_hash
 from app.graph.workflow import _pending_interrupts, build_graph, open_repository, run_workflow
 from app.models import CollectedPost, ExtractionResult, PostClassification, QAPairDraft
+from langgraph.types import Command
 
 GIL_POST = (
     "Interview questions I was asked:\n"
