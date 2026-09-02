@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Fake LinkedIn activity</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; }
+    .feed { height: 4000px; }
+    .feed-shared-update-v2 { margin: 24px; padding: 16px; border: 1px solid #ddd; }
+    .hidden-extra { display: none; }
+  </style>
+</head>
+<body>
+  <nav id="global-nav">Home</nav>
+  <div class="feed">
+    <div class="feed-shared-update-v2" data-urn="urn:li:activity:111">
+      <div class="update-components-actor__title">Ada Lovelace</div>
+      <a class="update-components-actor__sub-description-link" href="https://www.linkedin.com/feed/update/urn:li:activity:111">2d</a>
+      <div class="update-components-text">
+        Interview question: What is the GIL?
+        <span class="visible-answer"> A: Global Interpreter Lock in CPython.</span>
+      </div>
+      <button class="feed-shared-inline-show-more-text__see-more-less-toggle" type="button">see more</button>
+    </div>
+    <div class="feed-shared-update-v2" data-urn="urn:li:activity:222">
+      <div class="update-components-actor__title">Ada Lovelace</div>
+      <a class="update-components-actor__sub-description-link" href="https://www.linkedin.com/feed/update/urn:li:activity:222">1w</a>
+      <div class="update-components-text">SQL interview: What is a primary key? A unique column that identifies a row.</div>
+    </div>
+  </div>
+  <script>
+    document.querySelectorAll('.feed-shared-inline-show-more-text__see-more-less-toggle').forEach((button) => {
+      button.addEventListener('click', () => {
+        const text = button.parentElement.querySelector('.update-components-text');
+        text.insertAdjacentText('beforeend', ' Extra details after expanding.');
+        button.remove();
+      });
+    });
+  </script>
+</body>
+</html>

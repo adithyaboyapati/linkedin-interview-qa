@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>LinkedIn Interview Questions &amp; Answers</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 22mm 18mm 24mm 18mm;
+      @bottom-center {
+        content: counter(page);
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 9pt;
+        color: #667085;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #1d2939;
+      font-size: 10.5pt;
+      line-height: 1.45;
+    }
+
+    .cover {
+      border-bottom: 3px solid #0a66c2;
+      padding-bottom: 16px;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: 22pt;
+      letter-spacing: -0.02em;
+      margin: 0 0 10px 0;
+      color: #0a66c2;
+    }
+
+    .meta {
+      color: #475467;
+      font-size: 10pt;
+    }
+
+    .meta div { margin: 2px 0; }
+
+    h2 {
+      font-size: 14pt;
+      color: #101828;
+      margin: 26px 0 6px 0;
+      page-break-after: avoid;
+    }
+
+    .rule {
+      border: none;
+      border-top: 1px solid #0a66c2;
+      margin: 0 0 16px 0;
+    }
+
+    .qa {
+      margin: 0 0 18px 0;
+      page-break-inside: avoid;
+    }
+
+    .question {
+      font-weight: 700;
+      color: #101828;
+      margin-bottom: 6px;
+    }
+
+    .answer-label {
+      font-weight: 700;
+      color: #344054;
+      margin: 0 0 4px 0;
+    }
+
+    .answer {
+      white-space: pre-wrap;
+      color: #1d2939;
+      margin: 0 0 8px 0;
+    }
+
+    .source {
+      font-size: 8.5pt;
+      color: #667085;
+      word-break: break-all;
+    }
+
+    .empty {
+      color: #667085;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <h1>LinkedIn Interview Questions &amp; Answers</h1>
+    <div class="meta">
+      <div>Source: {{ creator }}</div>
+      <div>Generated: {{ generated }}</div>
+    </div>
+  </section>
+
+  {% if not categories %}
+    <p class="empty">No answered interview Q&amp;A pairs were found.</p>
+  {% endif %}
+
+  {% for category, items in categories.items() %}
+    <h2>{{ category }}</h2>
+    <hr class="rule">
+    {% for item in items %}
+      <article class="qa">
+        <div class="question">Q{{ loop.index }}. {{ item.question }}</div>
+        <div class="answer-label">Answer:</div>
+        <div class="answer">{{ item.answer }}</div>
+        {% if item.source_url %}
+          <div class="source">Source: {{ item.source_url }}</div>
+        {% endif %}
+      </article>
+    {% endfor %}
+  {% endfor %}
+</body>
+</html>

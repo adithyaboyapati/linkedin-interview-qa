@@ -1,0 +1,37 @@
+# Secrets and local config — never commit API keys or login sessions
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Runtime data: LinkedIn cookies, scraped posts, PDFs, local Chromium
+data/browser_profile/
+data/ms-playwright/
+data/*.db
+data/*.db-*
+data/raw/**
+!data/raw/.gitkeep
+data/raw_*/
+data/output/**
+!data/output/.gitkeep
+
+# Credentials and keys
+*.pem
+*.key
+credentials.json
+secrets.json
+
+.DS_Store

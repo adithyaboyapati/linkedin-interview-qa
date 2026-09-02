@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Fake LinkedIn carousel</title>
+  <style>
+    img { width: 120px; height: 60px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="feed-shared-update-v2" data-urn="urn:li:activity:carousel">
+    <div class="update-components-actor__title">Chandra Sekhar</div>
+    <a class="update-components-actor__sub-description-link" href="https://www.linkedin.com/feed/update/urn:li:activity:carousel">1d</a>
+    <div class="update-components-text">Swipe through</div>
+    <div class="update-components-carousel">
+      <img class="update-components-image__image" id="slide" alt="slide"
+           src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==">
+      <button type="button" aria-label="Next image">Next</button>
+    </div>
+  </div>
+  <div class="feed-shared-update-v2" data-urn="urn:li:activity:image-only">
+    <div class="update-components-actor__title">Chandra Sekhar</div>
+    <img class="update-components-image__image" alt="image"
+         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
+  </div>
+  <script>
+    const slides = [
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg=="
+    ];
+    let index = 0;
+    document.querySelector('button[aria-label="Next image"]').addEventListener('click', () => {
+      index = (index + 1) % slides.length;
+      document.getElementById('slide').src = slides[index];
+    });
+  </script>
+</body>
+</html>
